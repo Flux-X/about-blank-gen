@@ -1,64 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fullscreen Iframe Loader</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
-    }
-    button {
-      padding: 10px 20px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open URL in New Window</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+        }
+        input[type="text"] {
+            padding: 10px;
+            width: 80%;
+            max-width: 300px;
+            margin: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 
-  <h1>Enter a URL for Fullscreen Iframe</h1>
-  <input type="text" id="urlInput" placeholder="Enter URL here..." />
-  <button onclick="openIframe()">Open in Fullscreen</button>
+<div class="container">
+    <h1>Open URL in New Window</h1>
+    <input type="text" id="urlInput" placeholder="Enter URL here" />
+    <button onclick="openURL()">Open URL</button>
+</div>
 
-  <script>
-    function openIframe() {
-      const url = document.getElementById('urlInput').value;
-      if (!url) {
-        alert('Please enter a URL!');
-        return;
-      }
+<script>
+    function openURL() {
+        var urlToOpen = document.getElementById('urlInput').value;
 
-      // Open a new blank tab
-      const newWindow = window.open('about:blank', '_blank');
-      
-      // Create the iframe element
-      const iframe = newWindow.document.createElement('iframe');
-      
-      // Set the iframe properties to make it fullscreen
-      iframe.src = url;
-      iframe.style.width = '100vw';
-      iframe.style.height = '100vh';
-      iframe.style.border = 'none';
-      iframe.style.position = 'absolute';
-      iframe.style.top = '0';
-      iframe.style.left = '0';
-      
-      // Append iframe to the new window's document body
-      newWindow.document.body.appendChild(iframe);
+        if (!urlToOpen) {
+            alert("Please enter a URL.");
+            return;
+        }
+
+        var url = urlToOpen;
+
+        // Open a new window
+        var win = window.open();
+        win.document.body.style.margin = '0';
+        win.document.body.style.height = '100vh';
+
+        // Create and append the Global Site Tag (gtag.js) script
+        var gtagScript = win.document.createElement('script');
+        gtagScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-FG22JV74V5';
+        gtagScript.async = true;
+        win.document.head.appendChild(gtagScript);
+
+        // Initialize gtag and set up basic tracking
+        gtagScript.onload = function() {
+            var gtagInitScript = win.document.createElement('script');
+            gtagInitScript.innerHTML = `
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-FG22JV74V5');
+            `;
+            win.document.head.appendChild(gtagInitScript);
+        };
+
+        // Create and append the iframe
+        var embed = win.document.createElement('embed');
+        embed.style.border = 'none';
+        embed.style.width = '100%';
+        embed.style.height = '100%';
+        embed.style.margin = '0';
+        embed.src = url;
+        win.document.body.appendChild(embed);
     }
-  </script>
+</script>
 
 </body>
 </html>
